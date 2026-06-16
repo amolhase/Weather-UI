@@ -1,10 +1,18 @@
 import axios, { Axios } from "axios";
 import { useEffect, useState } from "react";
 import '../style/DashBoard.css';
+import { WeatherForm } from "./WeatherForm";
 
 export const DashBoard = () => {
 
     const [weatherRecords, setWeatherRecords] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+
+    const [weather, setWeather] = useState({
+        city: "",
+        condition: "",
+        temperature: ""
+    });
 
     useEffect(() => {
         axios.get("http://localhost:8080/weather", {
@@ -23,6 +31,45 @@ export const DashBoard = () => {
             })
     }, []);
 
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setWeather(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const addWeather = () => {
+
+        axios.post(
+            "http://localhost:8080/weather",
+            weather,
+            {
+                headers: {
+                    "X-API-KEY": "api-key"
+                }
+            })
+            .then(response => {
+                setWeatherRecords(prev => [
+                    ...prev,
+                    response.data
+                ]);
+
+                setShowModal(false);
+
+                setWeather({
+                    city: "",
+                    condition: "",
+                    temperature: ""
+                });
+
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
+
     return (
         <>
             <div className="dashboard-container">
@@ -36,7 +83,21 @@ export const DashBoard = () => {
                 </div>
 
                 <div className="right-panel">
-                    <h2>Weather Records</h2>
+                    <div className="table-header">
+                        <div className="search-container">
+                            <input
+                                type="text"
+                                placeholder="Search by city..."
+                                className="search-input"
+                            />
+                            <button className="search-btn">Search</button>
+                        </div>
+
+                        <div className="action-buttons">
+                            <button className="update-btn">Update</button>
+                            <button className="add-btn" onClick={() => setShowModal(true)}>Add Weather</button>
+                        </div>
+                    </div>
 
                     <table border="1">
                         <thead>
@@ -60,6 +121,16 @@ export const DashBoard = () => {
                     </table>
                 </div>
             </div>
+            {
+                showModal && (
+                    <WeatherForm
+                        weather={weather}
+                        handleChange={handleChange}
+                        addWeather={addWeather}
+                        closeModal={() => setShowModal(false)}
+                    />
+                )
+            }
         </>
 
     );
