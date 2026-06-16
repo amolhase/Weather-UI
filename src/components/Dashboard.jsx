@@ -14,6 +14,8 @@ export const DashBoard = () => {
         temperature: ""
     });
 
+    const [errors, setErrors] = useState({});
+
     useEffect(() => {
         axios.get("http://localhost:8080/weather", {
             headers: {
@@ -38,9 +40,38 @@ export const DashBoard = () => {
             ...prev,
             [name]: value
         }));
+
+        setErrors(prev => ({
+            ...prev,
+            [name]: ""
+        }));
     };
 
+    const validateWeather = () => {
+        const validationErrors = {};
+
+        if(!weather.city.trim()) {
+            validationErrors.city = "City should not be empty";
+        }
+        if(!weather.condition.trim()) {
+            validationErrors.condition = "Condition should not be empty";
+        }
+        if(!weather.temperature) {
+            validationErrors.temperature = "Temperature should not be empty";
+        } else if(weather.temperature > 100) {
+            validationErrors.temperature = "Temperature should be less than 100";
+        }
+
+        setErrors(validationErrors);
+
+        return Object.keys(validationErrors).length === 0;
+    }
+
     const addWeather = () => {
+
+        if(!validateWeather()) {
+            return;
+        }
 
         axios.post(
             "http://localhost:8080/weather",
@@ -127,6 +158,7 @@ export const DashBoard = () => {
                         weather={weather}
                         handleChange={handleChange}
                         addWeather={addWeather}
+                        errors={errors}
                         closeModal={() => setShowModal(false)}
                     />
                 )

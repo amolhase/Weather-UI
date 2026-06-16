@@ -52,3 +52,7 @@
     padding: 10px 20px;
     cursor: pointer;
 }
+
+.error-msg {
+    color: #d22411;
+}

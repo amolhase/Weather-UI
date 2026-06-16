@@ -4,6 +4,7 @@ export const WeatherForm = ({
     weather,
     handleChange,
     addWeather,
+    errors,
     closeModal
 }) => {
 
@@ -21,6 +22,7 @@ export const WeatherForm = ({
                         value={weather.city}
                         onChange={handleChange}
                     />
+                    {errors.city && <span className="error-msg">{errors.city}</span>}
                 </div>
 
                 <div className="form-group">
@@ -31,6 +33,7 @@ export const WeatherForm = ({
                         value={weather.condition}
                         onChange={handleChange}
                     />
+                    {errors.condition && <span className="error-msg">{errors.condition}</span>}
                 </div>
 
                 <div className="form-group">
@@ -41,6 +44,7 @@ export const WeatherForm = ({
                         value={weather.temperature}
                         onChange={handleChange}
                     />
+                    {errors.temperature && <span className="error-msg">{errors.temperature}</span>}
                 </div>
 
                 <div className="modal-buttons">
